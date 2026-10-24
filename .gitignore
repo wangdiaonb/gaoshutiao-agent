@@ -1,0 +1,27 @@
+# ===== 敏感配置（含大模型 key / IMA 凭证，绝不入库）=====
+config.yaml
+*.local.yaml
+.env
+.env.*
+
+# ===== 运行时数据（采集结果、浏览器配置、数据库）=====
+data/
+!.gitkeep
+
+# ===== Python =====
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ===== 本地工具 / 编辑器 =====
+.workbuddy/
+.vscode/
+.idea/
+*.log
+*.bak
+*.old
+.DS_Store
+Thumbs.db

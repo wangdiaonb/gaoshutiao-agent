@@ -1,0 +1,9 @@
+# 采集（Android App 端）
+uiautomator2>=3.0.0
+adbutils>=2.0.0
+# 大模型 / 飞书调用
+requests>=2.31.0
+# 配置
+PyYAML>=6.0.1
+# 仅网页版 legacy 模式需要，App 模式不依赖
+playwright>=1.44.0

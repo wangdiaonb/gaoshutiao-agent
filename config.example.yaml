@@ -1,0 +1,170 @@
+# ============================================
+# 小红书广告洞察工具 配置文件
+# 复制为 config.yaml 后填写
+# ============================================
+
+# ---------- 大模型（做人群/场景/需求分析） ----------
+# 任何 OpenAI 兼容接口都可以：DeepSeek / 通义千问 / 智谱 / Moonshot / OpenAI
+llm:
+  base_url: "https://api.deepseek.com/v1"
+  api_key: ""
+  model: "deepseek-chat"
+  concurrency: 4          # 并发数，别调太高免得被限流
+  timeout: 90
+
+# ---------- 抓取 ----------
+crawl:
+  target_count: 100            # 每天目标条数（广告 + 疑似广告）
+  max_scroll_per_keyword: 8    # 每个关键词最多下滑几次
+  # 抓取来源：android=App端（有广告标签，推荐）/ web=网页版（拿不到广告标签）
+  source: "android"
+  # 数据源：homefeed=首页推荐流（信息流广告密度最高）/ search=搜索结果（广告位少）
+  sources: ["homefeed", "search"]
+  homefeed_scroll: 12          # 首页流滚动次数，直接影响能撞到多少广告
+  fetch_detail: true           # 是否进详情页抓正文（分析质量靠这个，关掉会明显变差）
+  fetch_comments: 8            # 详情页抓几条热评（人群洞察很有用）
+  headless: false              # 首次登录/调试务必 false，能看见浏览器；稳定后可改 true
+  # true = 用 iPhone UA 访问移动端 H5（卡片形态更接近 App，可能带「广告」标签）
+  mobile: false
+  channel: "chrome"            # chrome / msedge / 留空则用 playwright 自带 chromium
+  # 方案B：填入 CDP 地址则连接你自己已登录的 Chrome（最抗风控），留空为普通模式
+  # 先用 start_chrome_debug.bat 打开 Chrome，再填 http://127.0.0.1:9222
+  cdp_url: ""
+  min_delay: 2.0               # 每次操作间隔（秒），太激进会被风控
+  max_delay: 5.0
+  # 抓取关键词：按「人群 / 场景 / 需求」三类铺开，命中率更高
+  keywords:
+    # --- 人群向 ---
+    - 宝妈 好物推荐
+    - 学生党 平价
+    - 打工人 续命
+    - 敏感肌 护肤
+    - 中年男人 穿搭
+    - 银发 养生
+    - 程序员 护眼
+    - 备孕 营养
+    # --- 场景向 ---
+    - 通勤 好物
+    - 熬夜 急救
+    - 减脂 代餐
+    - 送礼 推荐
+    - 露营 装备
+    - 租房 改造
+    - 出差 便携
+    - 加班 宵夜
+    # --- 需求向 ---
+    - 脱发 改善
+    - 口腔 护理
+    - 睡眠 不好
+    - 孩子 挑食
+    - 宠物 掉毛
+    - 姨妈 痛
+    - 眼袋 黑眼圈
+    - 便秘 调理
+  # 广告判定规则（可自行加词）
+  # 「广告」两个字不单独算强证据（正文里常有"没有广告""不是广告"），只作弱词
+  ad_rules:
+    strong_keywords: ["赞助", "品牌合作", "品牌赞助", "商业推广", "合作笔记"]
+    weak_keywords: ["广告", "推广", "合作款", "联名", "直播间", "下单", "优惠券", "限时",
+                    "福利价", "橱窗", "双十一", "点击链接", "评论区"]
+
+# ---------- Android App 端（唯一能看到「广告」标签的来源）----------
+android:
+  serial: ""              # 留空自动找装了小红书的设备；MuMu 常见 127.0.0.1:16384
+  mode: "search"          # search=按关键词搜索（推荐）/ feed=首页信息流（易偏科且很快枯竭）
+  # 按领域分组铺词：每个词单独搜一次，广告覆盖面取决于这里的宽度
+  search_keywords:
+    # 美妆个护
+    - 护肤 好物
+    - 敏感肌 修护
+    - 防晒 推荐
+    - 面膜 推荐
+    - 眼霜 推荐
+    - 香水 推荐
+    # 母婴亲子
+    - 母婴 好物
+    - 宝宝 辅食
+    - 婴儿车 推荐
+    - 安全座椅
+    - 月子中心
+    # 食品饮料
+    - 零食 推荐
+    - 咖啡 推荐
+    # 家居家装
+    - 家居好物
+    - 租房 改造
+    - 家居 收纳
+    - 家电 推荐
+    # 宠物
+    - 宠物 好物
+    - 猫粮 推荐
+    # 口腔健康
+    - 口腔护理
+    - 电动牙刷 推荐
+    # 户外运动
+    - 露营 装备
+    - 露营 好物
+    - 跑步 装备
+    # 服饰鞋包
+    - 穿搭 推荐
+    - 通勤 穿搭
+    - 珠宝 首饰
+    # 3C 数码
+    - 数码 好物
+    - 耳机 推荐
+    - 智能家居
+    # 本地生活
+    - 搬家 推荐
+    - 婚纱 摄影
+    - 体检 套餐
+    - 装修 避坑
+    # 医药健康
+    - 健身 补剂
+    - 睡眠 改善
+    # 教育培训
+    - 考研 备考
+    - 留学 申请
+    # 汽车出行
+    - 汽车 推荐
+    - 新能源车 试驾
+    # 金融
+    - 保险 推荐
+    # 人群向
+    - 学生党 好物
+    - 打工人 必备
+  fetch_link: true        # 进详情页点「分享→复制链接」拿真实短链（每条多约 7 秒）
+  fetch_detail: true      # 顺带取正文/话题（与取链接同一次跳转，不额外加时间）
+  max_scroll: 20          # 每个关键词最多滑多少屏（搜索结果一般 5-8 屏就到底）
+  ad_stall_screens: 8     # 连续多少屏无新增广告就换下一个关键词
+  scroll_wait: 1.8        # 每屏停留秒数
+  resume: true            # 断点续采：中途停掉不丢已采数据
+
+# ---------- 行业链路模式（推荐）----------
+# 填了 name 就走「拆行业 → 逐环节采集」：每个环节抓 per_segment 条，总数不限，
+# 目标是把这个行业链路里每个部分都覆盖到。留空则走 android.search_keywords 平铺模式。
+industry:
+  name: ""              # 例：跨境电商
+  per_keyword: 5        # 每个关键词目标新增几条（翻到重复的直接跳过，凑不够就少点）
+  segments_min: 6       # 让模型拆几个环节
+  segments_max: 12
+  max_per_advertiser: 1 # 同一广告主最多保留几条（Ozon 这类多次投放只留一条）
+  max_per_author: 1     # 同一作者账号最多保留几条（一个号连发多条，多半是同一次投放）
+
+# ---------- 模拟器自动启动 ----------
+# 开跑前自动拉起 MuMu、打开小红书。安装路径从 %APPDATA%\Netease\MuMuPlayer\install_config.json 自动读，
+# 换盘/换版本不用改代码；特殊安装位置可用环境变量 MUMU_MANAGER 指定 MuMuManager.exe。
+emulator:
+  auto_start: true        # false = 需要你手动先开好模拟器
+  vm_index: 0             # MuMu 多开时的实例编号
+  adb_port: 16384         # MuMu 默认 16384
+  boot_timeout: 180       # 等开机的上限秒数
+  auto_relogin: true      # 检测到掉登录时，自动点「重新登录」把二维码调出来
+
+# ---------- IMA 知识库（每天自动导入日报）----------
+# 凭证二选一：填这里，或放到 ~/.config/ima/{client_id,api_key}
+# 申请地址：https://ima.qq.com/agent-interface
+ima:
+  enabled: false          # 填好凭证和知识库 ID 后改成 true
+  client_id: ""
+  api_key: ""
+  knowledge_base_id: ""   # 用 python ima_setup.py 可以列出你的知识库 ID
