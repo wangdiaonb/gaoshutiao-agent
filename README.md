@@ -132,6 +132,13 @@
 `run.py` 会自动切到项目自带 `.venv`，并自动完成开机、采集、分析、传知识库、推群。
 任何 AI 工具（Codex / Claude Code / WorkBuddy）读 `AGENTS.md` 后也只需要这一条命令。
 
+> **先复制配置模板**：仓库里不含 `config.yaml`（里面有密钥，已被 `.gitignore` 排除），
+> 第一次使用请复制模板再填自己的值：
+>
+> ```powershell
+> Copy-Item config.example.yaml config.yaml
+> ```
+
 完整手工步骤：
 
 ```powershell
